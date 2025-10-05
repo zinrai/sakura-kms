@@ -24,9 +24,8 @@ $ go install github.com/zinrai/sakura-kms@latest
 Set the following environment variables:
 
 ```bash
-export SAKURACLOUD_ACCESS_TOKEN="your-api-token"
-export SAKURACLOUD_ACCESS_TOKEN_SECRET="your-api-secret"
-export SAKURACLOUD_ZONE="is1a"  # or tk1a, tk1b, etc.
+$ export SAKURACLOUD_ACCESS_TOKEN="your-api-token"
+$ export SAKURACLOUD_ACCESS_TOKEN_SECRET="your-api-secret"
 ```
 
 ## Usage
@@ -40,7 +39,7 @@ $ cat plaintext.txt | sakura-kms encrypt -output encrypted.bin -resource-id 1100
 ### Decrypt
 
 ```bash
-$ cat encrypted.bin | sakura-kms decrypt -output plaintext.enc.txt -resource-id 110000000000
+$ cat encrypted.bin | sakura-kms decrypt -output plaintext.txt -resource-id 110000000000
 ```
 
 ### Examples
@@ -70,16 +69,20 @@ $ cat config.json | sakura-kms encrypt -output config.json.enc -resource-id 1100
 Encrypts data from stdin and writes the ciphertext to the specified output file.
 
 **Flags:**
+
 - `-output` (required): Output file path
 - `-resource-id` (required): KMS key resource ID
+- `-zone` (optional): SAKURA Cloud zone (default: "is1a")
 
 ### decrypt
 
 Decrypts data from stdin and writes the plaintext to the specified output file.
 
 **Flags:**
+
 - `-output` (required): Output file path
 - `-resource-id` (required): KMS key resource ID
+- `-zone` (optional): SAKURA Cloud zone (default: "is1a")
 
 ## How It Works
 

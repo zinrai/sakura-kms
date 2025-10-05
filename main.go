@@ -34,6 +34,7 @@ func runEncrypt(args []string) error {
 	fs := flag.NewFlagSet("encrypt", flag.ExitOnError)
 	output := fs.String("output", "", "Output file path (required)")
 	resourceID := fs.String("resource-id", "", "KMS key resource ID (required)")
+	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
 	if *output == "" || *resourceID == "" {
@@ -41,7 +42,7 @@ func runEncrypt(args []string) error {
 		return fmt.Errorf("both -output and -resource-id are required")
 	}
 
-	cfg, err := LoadConfig()
+	cfg, err := LoadConfig(*zone)
 	if err != nil {
 		return err
 	}
@@ -62,6 +63,7 @@ func runDecrypt(args []string) error {
 	fs := flag.NewFlagSet("decrypt", flag.ExitOnError)
 	output := fs.String("output", "", "Output file path (required)")
 	resourceID := fs.String("resource-id", "", "KMS key resource ID (required)")
+	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
 	if *output == "" || *resourceID == "" {
@@ -69,7 +71,7 @@ func runDecrypt(args []string) error {
 		return fmt.Errorf("both -output and -resource-id are required")
 	}
 
-	cfg, err := LoadConfig()
+	cfg, err := LoadConfig(*zone)
 	if err != nil {
 		return err
 	}
@@ -96,18 +98,20 @@ Commands:
 Encrypt options:
   -output string        Output file path (required)
   -resource-id string   KMS key resource ID (required)
+  -zone string          SAKURA Cloud zone (default "is1a")
 
 Decrypt options:
   -output string        Output file path (required)
   -resource-id string   KMS key resource ID (required)
+  -zone string          SAKURA Cloud zone (default "is1a")
 
-Environment variables (all required):
+Environment variables (required):
   SAKURACLOUD_ACCESS_TOKEN          API token
   SAKURACLOUD_ACCESS_TOKEN_SECRET   API secret
-  SAKURACLOUD_ZONE                  Zone (is1a, tk1a, etc.)
 
 Example:
   cat secret.txt | sakura-kms encrypt -output secret.enc -resource-id 110000000000
+  cat secret.txt | sakura-kms encrypt -output secret.enc -resource-id 110000000000 -zone tk1a
   cat secret.enc | sakura-kms decrypt -output secret.txt -resource-id 110000000000
 `)
 }

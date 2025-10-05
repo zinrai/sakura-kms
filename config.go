@@ -11,11 +11,11 @@ type Config struct {
 	Zone   string
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig(zone string) (*Config, error) {
 	cfg := &Config{
 		Token:  os.Getenv("SAKURACLOUD_ACCESS_TOKEN"),
 		Secret: os.Getenv("SAKURACLOUD_ACCESS_TOKEN_SECRET"),
-		Zone:   os.Getenv("SAKURACLOUD_ZONE"),
+		Zone:   zone,
 	}
 
 	var missing []string
@@ -24,9 +24,6 @@ func LoadConfig() (*Config, error) {
 	}
 	if cfg.Secret == "" {
 		missing = append(missing, "SAKURACLOUD_ACCESS_TOKEN_SECRET")
-	}
-	if cfg.Zone == "" {
-		missing = append(missing, "SAKURACLOUD_ZONE")
 	}
 
 	if len(missing) > 0 {
