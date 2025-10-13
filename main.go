@@ -33,13 +33,12 @@ func main() {
 func runEncrypt(args []string) error {
 	fs := flag.NewFlagSet("encrypt", flag.ExitOnError)
 	output := fs.String("output", "", "Output file path (required)")
-	resourceID := fs.String("resource-id", "", "KMS key resource ID (required)")
 	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
-	if *output == "" || *resourceID == "" {
+	if *output == "" {
 		fs.Usage()
-		return fmt.Errorf("both -output and -resource-id are required")
+		return fmt.Errorf("-output is required")
 	}
 
 	cfg, err := LoadConfig(*zone)
@@ -56,19 +55,18 @@ func runEncrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Encrypt(cfg, *resourceID, data, *output)
+	return Encrypt(cfg, cfg.KeyID, data, *output)
 }
 
 func runDecrypt(args []string) error {
 	fs := flag.NewFlagSet("decrypt", flag.ExitOnError)
 	output := fs.String("output", "", "Output file path (required)")
-	resourceID := fs.String("resource-id", "", "KMS key resource ID (required)")
 	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
-	if *output == "" || *resourceID == "" {
+	if *output == "" {
 		fs.Usage()
-		return fmt.Errorf("both -output and -resource-id are required")
+		return fmt.Errorf("-output is required")
 	}
 
 	cfg, err := LoadConfig(*zone)
@@ -85,7 +83,7 @@ func runDecrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Decrypt(cfg, *resourceID, data, *output)
+	return Decrypt(cfg, cfg.KeyID, data, *output)
 }
 
 func printUsage() {
@@ -97,21 +95,20 @@ Commands:
 
 Encrypt options:
   -output string        Output file path (required)
-  -resource-id string   KMS key resource ID (required)
   -zone string          SAKURA Cloud zone (default "is1a")
 
 Decrypt options:
   -output string        Output file path (required)
-  -resource-id string   KMS key resource ID (required)
   -zone string          SAKURA Cloud zone (default "is1a")
 
 Environment variables (required):
   SAKURACLOUD_ACCESS_TOKEN          API token
   SAKURACLOUD_ACCESS_TOKEN_SECRET   API secret
+  SAKURACLOUD_KMS_KEY_ID            KMS key resource ID
 
 Example:
-  cat secret.txt | sakura-kms encrypt -output secret.enc -resource-id 110000000000
-  cat secret.txt | sakura-kms encrypt -output secret.enc -resource-id 110000000000 -zone tk1a
-  cat secret.enc | sakura-kms decrypt -output secret.txt -resource-id 110000000000
+  cat secret.txt | sakura-kms encrypt -output secret.enc
+  cat secret.txt | sakura-kms encrypt -output secret.enc -zone tk1a
+  cat secret.enc | sakura-kms decrypt -output secret.txt
 `)
 }

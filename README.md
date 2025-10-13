@@ -26,6 +26,7 @@ Set the following environment variables:
 ```bash
 $ export SAKURACLOUD_ACCESS_TOKEN="your-api-token"
 $ export SAKURACLOUD_ACCESS_TOKEN_SECRET="your-api-secret"
+$ export SAKURACLOUD_KMS_KEY_ID="110000000000"
 ```
 
 ## Usage
@@ -33,13 +34,13 @@ $ export SAKURACLOUD_ACCESS_TOKEN_SECRET="your-api-secret"
 ### Encrypt
 
 ```bash
-$ cat plaintext.txt | sakura-kms encrypt -output encrypted.bin -resource-id 110000000000
+$ cat plaintext.txt | sakura-kms encrypt -output encrypted.bin
 ```
 
 ### Decrypt
 
 ```bash
-$ cat encrypted.bin | sakura-kms decrypt -output plaintext.txt -resource-id 110000000000
+$ cat encrypted.bin | sakura-kms decrypt -output plaintext.txt
 ```
 
 ### Examples
@@ -47,19 +48,19 @@ $ cat encrypted.bin | sakura-kms decrypt -output plaintext.txt -resource-id 1100
 Encrypt a database password:
 
 ```bash
-$ echo "my-secret-password" | sakura-kms encrypt -output db-password.enc -resource-id 110000000000
+$ echo "my-secret-password" | sakura-kms encrypt -output db-password.enc
 ```
 
 Decrypt and use in a pipeline:
 
 ```bash
-$ cat db-password.enc | sakura-kms decrypt -output /dev/stdout -resource-id 110000000000 | my-application --password-stdin
+$ cat db-password.enc | sakura-kms decrypt -output /dev/stdout | my-application --password-stdin
 ```
 
 Encrypt a configuration file:
 
 ```bash
-$ cat config.json | sakura-kms encrypt -output config.json.enc -resource-id 110000000000
+$ cat config.json | sakura-kms encrypt -output config.json.enc
 ```
 
 ## Command Reference
@@ -71,7 +72,6 @@ Encrypts data from stdin and writes the ciphertext to the specified output file.
 **Flags:**
 
 - `-output` (required): Output file path
-- `-resource-id` (required): KMS key resource ID
 - `-zone` (optional): SAKURA Cloud zone (default: "is1a")
 
 ### decrypt
@@ -81,7 +81,6 @@ Decrypts data from stdin and writes the plaintext to the specified output file.
 **Flags:**
 
 - `-output` (required): Output file path
-- `-resource-id` (required): KMS key resource ID
 - `-zone` (optional): SAKURA Cloud zone (default: "is1a")
 
 ## How It Works
