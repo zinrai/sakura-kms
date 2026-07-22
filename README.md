@@ -7,12 +7,6 @@ A command-line tool for encrypting and decrypting data using [SAKURA Cloud KMS (
 - Encrypt data from stdin using SAKURA Cloud KMS
 - Decrypt data from stdin using SAKURA Cloud KMS
 
-## Installation
-
-```bash
-$ go install github.com/zinrai/sakura-kms@latest
-```
-
 ## Prerequisites
 
 1. A SAKURA Cloud account
