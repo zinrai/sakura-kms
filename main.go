@@ -101,14 +101,13 @@ Decrypt options:
   -zone string          SAKURA Cloud zone (default "is1a")
 
 Environment variables:
-  SAKURA_KMS_KEY_ID                 KMS key resource ID (required, or SAKURACLOUD_KMS_KEY_ID)
+  SAKURA_KMS_KEY_ID                 KMS key resource ID (required)
 
   API credentials are resolved by saclient-go. Set either static API keys:
     SAKURA_ACCESS_TOKEN, SAKURA_ACCESS_TOKEN_SECRET
   or service principal credentials:
     SAKURA_SERVICE_PRINCIPAL_ID, SAKURA_SERVICE_PRINCIPAL_KEY_ID,
     SAKURA_PRIVATE_KEY_PATH (or SAKURA_PRIVATE_KEY)
-  The legacy SAKURACLOUD_ prefixed names are also accepted.
 
 Example:
   sakura-kms encrypt < secret.txt > secret.enc

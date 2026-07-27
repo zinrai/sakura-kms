@@ -36,8 +36,6 @@ $ export SAKURA_SERVICE_PRINCIPAL_KEY_ID="your-key-id"
 $ export SAKURA_PRIVATE_KEY_PATH="/path/to/private-key.pem"
 ```
 
-The legacy `SAKURACLOUD_` prefixed names are also accepted.
-
 ## Usage
 
 ### Encrypt
