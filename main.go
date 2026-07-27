@@ -24,6 +24,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
+	case "version":
+		runVersion()
 	default:
 		printUsage()
 		os.Exit(1)
@@ -32,16 +34,15 @@ func main() {
 
 func runEncrypt(args []string) error {
 	fs := flag.NewFlagSet("encrypt", flag.ExitOnError)
-	output := fs.String("output", "", "Output file path (required)")
 	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
-	if *output == "" {
-		fs.Usage()
-		return fmt.Errorf("-output is required")
+	keyID, err := LoadKeyID()
+	if err != nil {
+		return err
 	}
 
-	cfg, err := LoadConfig(*zone)
+	client, err := NewKMSClient(*zone)
 	if err != nil {
 		return err
 	}
@@ -55,21 +56,20 @@ func runEncrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Encrypt(cfg, cfg.KeyID, data, *output)
+	return Encrypt(client, keyID, data)
 }
 
 func runDecrypt(args []string) error {
 	fs := flag.NewFlagSet("decrypt", flag.ExitOnError)
-	output := fs.String("output", "", "Output file path (required)")
 	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
 	fs.Parse(args)
 
-	if *output == "" {
-		fs.Usage()
-		return fmt.Errorf("-output is required")
+	keyID, err := LoadKeyID()
+	if err != nil {
+		return err
 	}
 
-	cfg, err := LoadConfig(*zone)
+	client, err := NewKMSClient(*zone)
 	if err != nil {
 		return err
 	}
@@ -83,32 +83,37 @@ func runDecrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Decrypt(cfg, cfg.KeyID, data, *output)
+	return Decrypt(client, keyID, data)
 }
 
 func printUsage() {
 	fmt.Fprintf(os.Stderr, `Usage: sakura-kms <command> [options]
 
 Commands:
-  encrypt    Encrypt data from stdin
-  decrypt    Decrypt data from stdin
+  encrypt    Encrypt data from stdin, write ciphertext to stdout
+  decrypt    Decrypt data from stdin, write plaintext to stdout
+  version    Print version
 
 Encrypt options:
-  -output string        Output file path (required)
   -zone string          SAKURA Cloud zone (default "is1a")
 
 Decrypt options:
-  -output string        Output file path (required)
   -zone string          SAKURA Cloud zone (default "is1a")
 
-Environment variables (required):
-  SAKURACLOUD_ACCESS_TOKEN          API token
-  SAKURACLOUD_ACCESS_TOKEN_SECRET   API secret
-  SAKURACLOUD_KMS_KEY_ID            KMS key resource ID
+Environment variables:
+  SAKURA_KMS_KEY_ID                 KMS key resource ID (required, or SAKURACLOUD_KMS_KEY_ID)
+
+  API credentials are resolved by saclient-go. Set either static API keys:
+    SAKURA_ACCESS_TOKEN, SAKURA_ACCESS_TOKEN_SECRET
+  or service principal credentials:
+    SAKURA_SERVICE_PRINCIPAL_ID, SAKURA_SERVICE_PRINCIPAL_KEY_ID,
+    SAKURA_PRIVATE_KEY_PATH (or SAKURA_PRIVATE_KEY)
+  The legacy SAKURACLOUD_ prefixed names are also accepted.
 
 Example:
-  cat secret.txt | sakura-kms encrypt -output secret.enc
-  cat secret.txt | sakura-kms encrypt -output secret.enc -zone tk1a
-  cat secret.enc | sakura-kms decrypt -output secret.txt
+  sakura-kms encrypt < secret.txt > secret.enc
+  sakura-kms encrypt -zone tk1a < secret.txt > secret.enc
+  sakura-kms decrypt < secret.enc > secret.txt
+  sakura-kms decrypt < secret.enc | my-application --password-stdin
 `)
 }

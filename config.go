@@ -5,35 +5,13 @@ import (
 	"os"
 )
 
-type Config struct {
-	Token  string
-	Secret string
-	Zone   string
-	KeyID  string
-}
-
-func LoadConfig(zone string) (*Config, error) {
-	cfg := &Config{
-		Token:  os.Getenv("SAKURACLOUD_ACCESS_TOKEN"),
-		Secret: os.Getenv("SAKURACLOUD_ACCESS_TOKEN_SECRET"),
-		KeyID:  os.Getenv("SAKURACLOUD_KMS_KEY_ID"),
-		Zone:   zone,
+// LoadKeyID resolves the KMS key resource ID from environment variables.
+// SAKURA_KMS_KEY_ID takes precedence over the legacy SAKURACLOUD_KMS_KEY_ID.
+func LoadKeyID() (string, error) {
+	for _, name := range []string{"SAKURA_KMS_KEY_ID", "SAKURACLOUD_KMS_KEY_ID"} {
+		if v := os.Getenv(name); v != "" {
+			return v, nil
+		}
 	}
-
-	var missing []string
-	if cfg.Token == "" {
-		missing = append(missing, "SAKURACLOUD_ACCESS_TOKEN")
-	}
-	if cfg.Secret == "" {
-		missing = append(missing, "SAKURACLOUD_ACCESS_TOKEN_SECRET")
-	}
-	if cfg.KeyID == "" {
-		missing = append(missing, "SAKURACLOUD_KMS_KEY_ID")
-	}
-
-	if len(missing) > 0 {
-		return nil, fmt.Errorf("required environment variables not set: %v", missing)
-	}
-
-	return cfg, nil
+	return "", fmt.Errorf("required environment variable not set: SAKURA_KMS_KEY_ID or SAKURACLOUD_KMS_KEY_ID")
 }

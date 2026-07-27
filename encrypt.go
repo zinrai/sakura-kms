@@ -1,47 +1,26 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/json"
+	"context"
 	"fmt"
 	"os"
+
+	kms "github.com/sacloud/kms-api-go"
+	v1 "github.com/sacloud/kms-api-go/apis/v1"
 )
 
-type EncryptRequest struct {
-	Key struct {
-		Plain string `json:"Plain"`
-		Algo  string `json:"Algo"`
-	} `json:"Key"`
-}
+func Encrypt(client *v1.Client, keyID string, plaintext []byte) error {
+	keyOp := kms.NewKeyOp(client)
 
-type EncryptResponse struct {
-	Key struct {
-		Cipher string `json:"Cipher"`
-	} `json:"Key"`
-}
-
-func Encrypt(cfg *Config, resourceID string, plaintext []byte, outputPath string) error {
-	client := NewClient(cfg)
-
-	req := EncryptRequest{}
-	req.Key.Plain = base64.StdEncoding.EncodeToString(plaintext)
-	req.Key.Algo = "aes-256-gcm"
-
-	path := fmt.Sprintf("/kms/keys/%s/encrypt", resourceID)
-	respData, err := client.doRequest("POST", path, req)
+	ciphertext, err := keyOp.Encrypt(context.Background(), keyID, plaintext, v1.KeyEncryptAlgoEnumAes256Gcm)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to encrypt: %w", err)
 	}
 
-	var resp EncryptResponse
-	if err := json.Unmarshal(respData, &resp); err != nil {
-		return fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	if err := os.WriteFile(outputPath, []byte(resp.Key.Cipher), 0600); err != nil {
+	if _, err := os.Stdout.WriteString(ciphertext); err != nil {
 		return fmt.Errorf("failed to write output: %w", err)
 	}
 
-	fmt.Fprintf(os.Stderr, "Successfully encrypted to %s\n", outputPath)
+	fmt.Fprintf(os.Stderr, "encrypted %d bytes with key %s\n", len(plaintext), keyID)
 	return nil
 }

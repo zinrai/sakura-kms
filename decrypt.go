@@ -1,50 +1,26 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/json"
+	"context"
 	"fmt"
 	"os"
+
+	kms "github.com/sacloud/kms-api-go"
+	v1 "github.com/sacloud/kms-api-go/apis/v1"
 )
 
-type DecryptRequest struct {
-	Key struct {
-		Cipher string `json:"Cipher"`
-	} `json:"Key"`
-}
+func Decrypt(client *v1.Client, keyID string, ciphertext []byte) error {
+	keyOp := kms.NewKeyOp(client)
 
-type DecryptResponse struct {
-	Key struct {
-		Plain string `json:"Plain"`
-	} `json:"Key"`
-}
-
-func Decrypt(cfg *Config, resourceID string, ciphertext []byte, outputPath string) error {
-	client := NewClient(cfg)
-
-	req := DecryptRequest{}
-	req.Key.Cipher = string(ciphertext)
-
-	path := fmt.Sprintf("/kms/keys/%s/decrypt", resourceID)
-	respData, err := client.doRequest("POST", path, req)
+	plaintext, err := keyOp.Decrypt(context.Background(), keyID, string(ciphertext))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to decrypt: %w", err)
 	}
 
-	var resp DecryptResponse
-	if err := json.Unmarshal(respData, &resp); err != nil {
-		return fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	plaintext, err := base64.StdEncoding.DecodeString(resp.Key.Plain)
-	if err != nil {
-		return fmt.Errorf("failed to decode base64: %w", err)
-	}
-
-	if err := os.WriteFile(outputPath, plaintext, 0600); err != nil {
+	if _, err := os.Stdout.Write(plaintext); err != nil {
 		return fmt.Errorf("failed to write output: %w", err)
 	}
 
-	fmt.Fprintf(os.Stderr, "Successfully decrypted to %s\n", outputPath)
+	fmt.Fprintf(os.Stderr, "decrypted %d bytes with key %s\n", len(plaintext), keyID)
 	return nil
 }
