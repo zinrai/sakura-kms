@@ -52,8 +52,8 @@ github.com/sacloud/api-client-go v0.3.5 h1:0ALibvbC+6MBhN7t61k+RhguhiEQ8+NejqBjq
 github.com/sacloud/api-client-go v0.3.5/go.mod h1:akdcCOl6wszywa0YQ5X8cMnNgWTm+7N4EneODTdiH48=
 github.com/sacloud/go-http v0.1.9 h1:Xa5PY8/pb7XWhwG9nAeXSrYXPbtfBWqawgzxD5co3VE=
 github.com/sacloud/go-http v0.1.9/go.mod h1:DpDG+MSyxYaBwPJ7l3aKLMzwYdTVtC5Bo63HActcgoE=
-github.com/sacloud/kms-api-go v0.4.0 h1:F1/Cw7W2h6B/HWsoPDI7xMZkzFKphfVTBOHYh6DT2bM=
-github.com/sacloud/kms-api-go v0.4.0/go.mod h1:OSJD0mlzdZQXJPLbhBlAIthwxHISjWXhy9gHvUxieC0=
+github.com/sacloud/kms-api-go v0.4.1 h1:LqyhzHTVjTBwxJEmeoGWR960xswtY2V71io3f91j3es=
+github.com/sacloud/kms-api-go v0.4.1/go.mod h1:0V8Un99q2uRzJVoMKLdL9yCR338SYdGzpvHQE36lFXk=
 github.com/sacloud/packages-go v0.1.0 h1:rixWcvkVUI4kX6UYTFJbQgZIoBoNhN48MivHIu3aYq0=
 github.com/sacloud/packages-go v0.1.0/go.mod h1:ntmPnjF8+mGWNtxgBmO0CrLphUlmRkpy+DztjlECp8M=
 github.com/sacloud/saclient-go v0.4.0 h1:d4CqjKDU0muPVukZ2qGB9Me6ANEcMg73z5tIqXIyGWA=
