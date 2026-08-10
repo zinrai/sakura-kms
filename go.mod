@@ -3,7 +3,7 @@ module github.com/zinrai/sakura-kms
 go 1.25.0
 
 require (
-	github.com/sacloud/kms-api-go v0.4.0
+	github.com/sacloud/kms-api-go v0.4.1
 	github.com/sacloud/saclient-go v0.4.0
 )
 
