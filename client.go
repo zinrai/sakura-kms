@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	kms "github.com/sacloud/kms-api-go"
-	v1 "github.com/sacloud/kms-api-go/apis/v1"
-	"github.com/sacloud/saclient-go"
+	kms "github.com/sacloud/sacloud-sdk-go/api/kms"
+	v1 "github.com/sacloud/sacloud-sdk-go/api/kms/apis/v1"
+	"github.com/sacloud/sacloud-sdk-go/common/saclient"
 )
 
 // NewKMSClient creates a KMS API client for the specified zone.
