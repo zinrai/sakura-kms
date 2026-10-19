@@ -12,7 +12,7 @@ import (
 func Encrypt(client *v1.Client, keyID string, plaintext []byte) error {
 	keyOp := kms.NewKeyOp(client)
 
-	ciphertext, err := keyOp.Encrypt(context.Background(), keyID, plaintext, v1.KeyEncryptAlgoEnumAes256Gcm)
+	ciphertext, err := keyOp.Encrypt(context.Background(), keyID, plaintext, v1.EncryptionRequestAlgoAes256Gcm)
 	if err != nil {
 		return fmt.Errorf("failed to encrypt: %w", err)
 	}
