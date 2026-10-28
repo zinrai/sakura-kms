@@ -9,7 +9,7 @@ import (
 	v1 "github.com/sacloud/sacloud-sdk-go/api/kms/apis/v1"
 )
 
-func Encrypt(client *v1.Client, keyID string, plaintext []byte) error {
+func encrypt(client *v1.Client, keyID string, plaintext []byte) error {
 	keyOp := kms.NewKeyOp(client)
 
 	ciphertext, err := keyOp.Encrypt(context.Background(), keyID, plaintext, v1.EncryptionRequestAlgoAes256Gcm)

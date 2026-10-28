@@ -9,10 +9,7 @@ import (
 	"github.com/sacloud/sacloud-sdk-go/common/saclient"
 )
 
-// NewKMSClient creates a KMS API client.
-// Credentials are resolved by saclient-go from environment variables,
-// supporting both static API keys and service principals.
-func NewKMSClient() (*v1.Client, error) {
+func newKMSClient() (*v1.Client, error) {
 	var sc saclient.Client
 	if err := sc.SetEnviron(os.Environ()); err != nil {
 		return nil, fmt.Errorf("failed to configure saclient: %w", err)

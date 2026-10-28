@@ -9,7 +9,7 @@ import (
 	v1 "github.com/sacloud/sacloud-sdk-go/api/kms/apis/v1"
 )
 
-func Decrypt(client *v1.Client, keyID string, ciphertext []byte) error {
+func decrypt(client *v1.Client, keyID string, ciphertext []byte) error {
 	keyOp := kms.NewKeyOp(client)
 
 	plaintext, err := keyOp.Decrypt(context.Background(), keyID, string(ciphertext))

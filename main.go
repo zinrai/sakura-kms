@@ -36,12 +36,12 @@ func runEncrypt(args []string) error {
 		return err
 	}
 
-	keyID, err := LoadKeyID()
+	keyID, err := loadKeyID()
 	if err != nil {
 		return err
 	}
 
-	client, err := NewKMSClient()
+	client, err := newKMSClient()
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func runEncrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Encrypt(client, keyID, data)
+	return encrypt(client, keyID, data)
 }
 
 func runDecrypt(args []string) error {
@@ -63,12 +63,12 @@ func runDecrypt(args []string) error {
 		return err
 	}
 
-	keyID, err := LoadKeyID()
+	keyID, err := loadKeyID()
 	if err != nil {
 		return err
 	}
 
-	client, err := NewKMSClient()
+	client, err := newKMSClient()
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func runDecrypt(args []string) error {
 		return fmt.Errorf("no data provided via stdin")
 	}
 
-	return Decrypt(client, keyID, data)
+	return decrypt(client, keyID, data)
 }
 
 func rejectArgs(args []string) error {

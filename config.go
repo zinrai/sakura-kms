@@ -5,8 +5,7 @@ import (
 	"os"
 )
 
-// LoadKeyID resolves the KMS key resource ID from the environment.
-func LoadKeyID() (string, error) {
+func loadKeyID() (string, error) {
 	if v := os.Getenv("SAKURA_KMS_KEY_ID"); v != "" {
 		return v, nil
 	}
