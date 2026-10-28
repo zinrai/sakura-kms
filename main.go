@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	v1 "github.com/sacloud/sacloud-sdk-go/api/kms/apis/v1"
 )
 
 func main() {
@@ -32,57 +34,74 @@ func main() {
 }
 
 func runEncrypt(args []string) error {
-	if err := rejectArgs(args); err != nil {
-		return err
-	}
-
-	keyID, err := loadKeyID()
+	in, err := prepare(args)
 	if err != nil {
 		return err
 	}
 
-	client, err := newKMSClient()
+	ciphertext, err := encrypt(in.client, in.keyID, in.data)
 	if err != nil {
 		return err
 	}
 
-	data, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		return fmt.Errorf("failed to read stdin: %w", err)
+	if _, err := os.Stdout.WriteString(ciphertext); err != nil {
+		return fmt.Errorf("failed to write output: %w", err)
 	}
 
-	if len(data) == 0 {
-		return fmt.Errorf("no data provided via stdin")
-	}
-
-	return encrypt(client, keyID, data)
+	fmt.Fprintf(os.Stderr, "encrypted %d bytes with key %s\n", len(in.data), in.keyID)
+	return nil
 }
 
 func runDecrypt(args []string) error {
-	if err := rejectArgs(args); err != nil {
+	in, err := prepare(args)
+	if err != nil {
 		return err
+	}
+
+	plaintext, err := decrypt(in.client, in.keyID, in.data)
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stdout.Write(plaintext); err != nil {
+		return fmt.Errorf("failed to write output: %w", err)
+	}
+
+	fmt.Fprintf(os.Stderr, "decrypted %d bytes with key %s\n", len(plaintext), in.keyID)
+	return nil
+}
+
+type input struct {
+	client *v1.Client
+	keyID  string
+	data   []byte
+}
+
+func prepare(args []string) (*input, error) {
+	if err := rejectArgs(args); err != nil {
+		return nil, err
 	}
 
 	keyID, err := loadKeyID()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	client, err := newKMSClient()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	data, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		return fmt.Errorf("failed to read stdin: %w", err)
+		return nil, fmt.Errorf("failed to read stdin: %w", err)
 	}
 
 	if len(data) == 0 {
-		return fmt.Errorf("no data provided via stdin")
+		return nil, fmt.Errorf("no data provided via stdin")
 	}
 
-	return decrypt(client, keyID, data)
+	return &input{client: client, keyID: keyID, data: data}, nil
 }
 
 func rejectArgs(args []string) error {
