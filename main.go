@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -33,16 +32,16 @@ func main() {
 }
 
 func runEncrypt(args []string) error {
-	fs := flag.NewFlagSet("encrypt", flag.ExitOnError)
-	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
-	fs.Parse(args)
+	if err := rejectArgs(args); err != nil {
+		return err
+	}
 
 	keyID, err := LoadKeyID()
 	if err != nil {
 		return err
 	}
 
-	client, err := NewKMSClient(*zone)
+	client, err := NewKMSClient()
 	if err != nil {
 		return err
 	}
@@ -60,16 +59,16 @@ func runEncrypt(args []string) error {
 }
 
 func runDecrypt(args []string) error {
-	fs := flag.NewFlagSet("decrypt", flag.ExitOnError)
-	zone := fs.String("zone", "is1a", "SAKURA Cloud zone")
-	fs.Parse(args)
+	if err := rejectArgs(args); err != nil {
+		return err
+	}
 
 	keyID, err := LoadKeyID()
 	if err != nil {
 		return err
 	}
 
-	client, err := NewKMSClient(*zone)
+	client, err := NewKMSClient()
 	if err != nil {
 		return err
 	}
@@ -86,19 +85,21 @@ func runDecrypt(args []string) error {
 	return Decrypt(client, keyID, data)
 }
 
+func rejectArgs(args []string) error {
+	// Not ignored: stdin would be read instead, waiting on the terminal.
+	if len(args) > 0 {
+		return fmt.Errorf("unexpected argument: %s", args[0])
+	}
+	return nil
+}
+
 func printUsage() {
-	fmt.Fprintf(os.Stderr, `Usage: sakura-kms <command> [options]
+	fmt.Fprintf(os.Stderr, `Usage: sakura-kms <command>
 
 Commands:
   encrypt    Encrypt data from stdin, write ciphertext to stdout
   decrypt    Decrypt data from stdin, write plaintext to stdout
   version    Print version
-
-Encrypt options:
-  -zone string          SAKURA Cloud zone (default "is1a")
-
-Decrypt options:
-  -zone string          SAKURA Cloud zone (default "is1a")
 
 Environment variables:
   SAKURA_KMS_KEY_ID                 KMS key resource ID (required)
@@ -111,7 +112,6 @@ Environment variables:
 
 Example:
   sakura-kms encrypt < secret.txt > secret.enc
-  sakura-kms encrypt -zone tk1a < secret.txt > secret.enc
   sakura-kms decrypt < secret.enc > secret.txt
   sakura-kms decrypt < secret.enc | my-application --password-stdin
 `)

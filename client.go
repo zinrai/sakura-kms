@@ -9,10 +9,10 @@ import (
 	"github.com/sacloud/sacloud-sdk-go/common/saclient"
 )
 
-// NewKMSClient creates a KMS API client for the specified zone.
+// NewKMSClient creates a KMS API client.
 // Credentials are resolved by saclient-go from environment variables,
 // supporting both static API keys and service principals.
-func NewKMSClient(zone string) (*v1.Client, error) {
+func NewKMSClient() (*v1.Client, error) {
 	var sc saclient.Client
 	if err := sc.SetEnviron(os.Environ()); err != nil {
 		return nil, fmt.Errorf("failed to configure saclient: %w", err)
@@ -21,9 +21,7 @@ func NewKMSClient(zone string) (*v1.Client, error) {
 		return nil, fmt.Errorf("failed to configure saclient: %w", err)
 	}
 
-	apiRootURL := fmt.Sprintf("https://secure.sakura.ad.jp/cloud/zone/%s/api/cloud/1.1", zone)
-
-	client, err := kms.NewClientWithAPIRootURL(&sc, apiRootURL)
+	client, err := kms.NewClient(&sc)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create KMS client: %w", err)
 	}

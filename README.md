@@ -21,7 +21,7 @@ Set the KMS key resource ID:
 $ export SAKURA_KMS_KEY_ID="110000000000"
 ```
 
-API credentials are resolved by [saclient-go](https://github.com/sacloud/saclient-go). Set either static API keys:
+API credentials and the API endpoint are resolved by [saclient-go](https://github.com/sacloud/saclient-go). Set either static API keys:
 
 ```bash
 $ export SAKURA_ACCESS_TOKEN="your-api-token"
@@ -76,17 +76,9 @@ $ sakura-kms encrypt < config.json > config.json.enc
 
 Encrypts data from stdin and writes the ciphertext to stdout. Reports the operation on stderr.
 
-**Flags:**
-
-- `-zone` (optional): SAKURA Cloud zone (default: "is1a")
-
 ### decrypt
 
 Decrypts data from stdin and writes the plaintext to stdout. Reports the operation on stderr.
-
-**Flags:**
-
-- `-zone` (optional): SAKURA Cloud zone (default: "is1a")
 
 ### version
 
