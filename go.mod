@@ -2,7 +2,7 @@ module github.com/zinrai/sakura-kms
 
 go 1.26.0
 
-require github.com/sacloud/sacloud-sdk-go v0.5.0
+require github.com/sacloud/sacloud-sdk-go v0.6.0
 
 require (
 	github.com/benbjohnson/clock v1.3.5 // indirect
